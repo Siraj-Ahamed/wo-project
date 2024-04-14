@@ -15,6 +15,19 @@ const getProducts = async (req, res) => {
     }
 };
 
+const getSingleProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.status(404).send({ message: "Product not found" });
+        }
+        res.status(200).json(product);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 const createProduct = async (req, res) => {
     // console.log(req.body);
     // res.send(req.body);s
@@ -27,4 +40,35 @@ const createProduct = async (req, res) => {
     }
 };
 
-module.exports = { getProducts, createProduct };
+const updateProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await Product.findByIdAndUpdate(id, req.body);
+
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        const updatedProduct = await Product.findById(id);
+        res.status(200).json(updatedProduct);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const deleteProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await Product.findByIdAndDelete(id);
+
+        if (!product) {
+            res.status(404).json({ message: "Product not found" });
+        }
+
+        res.status(200).json({ message: "Product deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { getProducts, getSingleProduct, createProduct, updateProduct, deleteProduct };
